@@ -1,0 +1,7 @@
+export * from './create-vehicle.prisma.repository'
+export * from './delete-vehicle.prisma.repository'
+export * from './find-all-vehicle.prisma.repository'
+export * from './find-vehicle-by-condition.prisma.repository'
+export * from './find-vehicle-by-id.prisma.repository'
+export * from './update-vehicle-status.prisma.repository'
+export * from './update-vehicle.prisma.repository'

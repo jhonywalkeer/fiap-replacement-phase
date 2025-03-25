@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  fiap-replacement-phase-db:
+    image: postgres:latest
+    container_name: fiap-replacement-phase-db
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=fiap-replacement-phase
+    ports:
+      - '5432:5432'
+    networks:
+      - fiap-network
+  fiap-replacement-phase-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fiap-replacement-phase-api
+    restart: always
+    ports:
+      - '3000:3000'
+    depends_on:
+      - fiap-replacement-phase-db
+    links:
+      - fiap-replacement-phase-db
+    env_file:
+      - .env
+    networks:
+      - fiap-network
+    command:
+      [
+        'wait-for-it',
+        'fiap-replacement-phase-db:5432',
+        '--',
+        'npm run start:prod'
+      ]
+networks:
+  fiap-network:
+    driver: bridge

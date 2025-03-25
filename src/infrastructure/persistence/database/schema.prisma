@@ -1,0 +1,111 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Vehicle {
+  id         String        @id @unique @default(uuid(7))
+  brand      String
+  model      String
+  fuel       Fuel          @default(Gasoline)
+  year       Int
+  color      String
+  price      Decimal
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+  sale_id    String?
+  status     VehicleStatus @default(Available)
+
+  sale Sale?
+
+  @@index([id])
+  @@map("vehicles")
+}
+
+model Sale {
+  id         String   @id @unique @default(uuid(7))
+  vehicle_id String   @unique
+  buyer_id   String
+  sale_date  DateTime @default(now())
+  payment_id String?
+
+  vehicle Vehicle @relation(fields: [vehicle_id], references: [id])
+  buyer   Client  @relation(fields: [buyer_id], references: [id])
+
+  payment Payment?
+
+  @@index([id])
+  @@map("sales")
+}
+
+model Client {
+  id                     String   @id @unique @default(uuid(7))
+  name                   String
+  mail                   String
+  social_security_number String
+  birth_date             DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+
+  sales Sale[]
+
+  @@index([id])
+  @@map("clients")
+}
+
+model Payment {
+  id         String        @id @unique @default(uuid(7))
+  sale_id    String        @unique
+  status     PaymentStatus @default(Pending)
+  method     PaymentMethod
+  amount     Decimal
+  reason     String?
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+
+  sale Sale @relation(fields: [sale_id], references: [id])
+
+  @@index([id])
+  @@map("payments")
+}
+
+enum VehicleStatus {
+  Available
+  Sold
+  Reserved
+
+  @@map("vehicle_status")
+}
+
+enum Fuel {
+  Alcohol
+  Diesel
+  Electric
+  Flex
+  Gasoline
+  Hybrid
+
+  @@map("fuels")
+}
+
+enum PaymentStatus {
+  Pending
+  Approved
+  Canceled
+
+  @@map("payment_status")
+}
+
+enum PaymentMethod {
+  Credit
+  Debit
+  BankSlip
+  Pix
+
+  @@map("payment_methods")
+}

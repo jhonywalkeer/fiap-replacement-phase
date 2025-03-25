@@ -1,0 +1,5 @@
+export * from './field.enum'
+export * from './fuel.enum'
+export * from './payment-method.enum'
+export * from './payment-status.enum'
+export * from './veicule-status.enum'

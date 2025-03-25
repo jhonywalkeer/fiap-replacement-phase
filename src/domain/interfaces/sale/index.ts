@@ -1,0 +1,6 @@
+export * from './create-sale.interface'
+export * from './find-sale-by-client.interface'
+export * from './find-sale-by-condition.interface'
+export * from './find-sale-by-id.interface'
+export * from './sale.interface'
+export * from './update-sale-with-payment-id.interface'

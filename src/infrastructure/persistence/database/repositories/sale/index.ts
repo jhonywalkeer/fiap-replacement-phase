@@ -1,0 +1,6 @@
+export * from './create-sale.prisma.repository'
+export * from './find-all-sales.prisma.repository'
+export * from './find-sale-by-client.prisma.repository'
+export * from './find-sale-by-condition.prisma.repository'
+export * from './find-sale-by-id.prisma.repository'
+export * from './update-sale-with-payment.prisma.repository'

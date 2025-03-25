@@ -1,0 +1,7 @@
+export * from './create-client.mock'
+export * from './delete-client.mock'
+export * from './find-all-clients.mock'
+export * from './find-client-by-condition.mock'
+export * from './find-client-by-id.mock'
+export * from './find-client-by-social-number.mock'
+export * from './update-client.mock'

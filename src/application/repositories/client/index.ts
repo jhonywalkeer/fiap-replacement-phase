@@ -1,0 +1,7 @@
+export * from './create-client.repository'
+export * from './delete-client.repository'
+export * from './find-all-clients.repository'
+export * from './find-client-by-condition.repository'
+export * from './find-client-by-id.repository'
+export * from './find-client-by-social-number.repository'
+export * from './update-client.repository'

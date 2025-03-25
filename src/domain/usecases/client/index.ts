@@ -1,0 +1,5 @@
+export * from './create-client.usecase'
+export * from './delete-client.usecase'
+export * from './find-all-clients.usecase'
+export * from './find-client-by-social-number.usecase'
+export * from './update-vehicle.usecase'

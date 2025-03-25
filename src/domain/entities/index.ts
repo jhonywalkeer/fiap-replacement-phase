@@ -1,0 +1,6 @@
+export * from './base.entity'
+export * from './client.entity'
+export * from './payment-with-sale.entity'
+export * from './payment.entity'
+export * from './sale.entity'
+export * from './vehicle.entity'

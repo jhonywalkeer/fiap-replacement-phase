@@ -1,0 +1,5 @@
+export * from './create-client.dto'
+export * from './delete-client.dto'
+export * from './find-all-clients.dto'
+export * from './find-client-by-social-number.dto'
+export * from './update-client.dto'

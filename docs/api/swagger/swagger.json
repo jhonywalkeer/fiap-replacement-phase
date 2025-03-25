@@ -1,0 +1,190 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FIAP Hackathon Backend (ClipVideo)",
+    "description": "Este é swagger do a api elaborada para o Hackathon da FIAP na especificação OpenAPI 3.0. Através dessa documentação, você terá acesso a todos os endpoints que estão disponíveis para realizar a ações responsáveis pelas features disponíveis para os usuários do _Clip Video_\n\nAlguns links úteis que podem ajudar:\n- [Repositório da API](https://github.com/jhonywalkeer/fiap-hackathon-backend)\n- [Arquivo que documenta a API no código-fonte](https://github.com/jhonywalkeer/fiap-hackathon-backend/blob/main/docs/api/swagger/swagger.json)\n- [Repositório do frontend](https://github.com/jhonywalkeer/fiap-hackathon-frontend)",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "name": "Entre em contato com o desenvolvedor",
+      "url": "https://www.linkedin.com/in/jhony-walker/"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.11"
+  },
+  "externalDocs": {
+    "description": "Veja mais sobre o projeto",
+    "url": "https://github.com/jhonywalkeer/fiap-hackathon-backend/blob/main/README.md"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1"
+    },
+    {
+      "url": "https://dfiap-hackathon.com.br"
+    },
+    {
+      "url": "https://hfiap-hackathon.com.br"
+    },
+    {
+      "url": "https://fiap-hackathon.com.br"
+    }
+  ],
+  "tags": [],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Verifica se a API está online",
+        "description": "Verifica se a API está online",
+        "responses": {
+          "200": {
+            "description": "API está online",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "API está offline"
+          }
+        },
+        "tags": ["Health"]
+      }
+    },
+    "/auth": {
+      "post": {
+        "summary": "Obtem token de autenticação para um usuário",
+        "description": "Obtem token de autenticação para um usuário",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email do usuário",
+                    "example": "usuario@exemplo.com.br"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "Token de autenticação",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InVzdWFyaW9AZXhhbXBsZS5jb20uYnIiLCJpYXQiOjE2MjYwNzIwNzMsImV4cCI6MTYyNjA3MjA3NH0.1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido ou não informado"
+          }
+        },
+        "tags": ["Autenticação"]
+      }
+    },
+    "/users": {
+      "post": {
+        "summary": "Cria um novo usuário",
+        "description": "Cria um novo usuário",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nome do usuário",
+                    "example": "Usuário Exemplo"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Email do usuário",
+                    "example": "usuario@exemplo.com.br"
+                  },
+                  "birth_date": {
+                    "type": "string",
+                    "description": "Data de nascimento do usuário",
+                    "example": "1999-12-31"
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "Usuário está ativo?",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Health": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Status da aplicacao como todo",
+            "example": "up"
+          },
+          "api": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status da API",
+                "example": "up"
+              }
+            }
+          },
+          "database": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status do banco de dados",
+                "example": "up"
+              }
+            }
+          }
+        }
+      },
+      "HealthOk": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Health"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+export * from './create-client.controller'
+export * from './delete-client.controller'
+export * from './find-all-clients.controller'
+export * from './find-client-by-social-number.controller'
+export * from './update-client.controller'

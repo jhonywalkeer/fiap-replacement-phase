@@ -1,0 +1,7 @@
+export * from './health-check/index'
+export * from './client/index'
+export * from './sale/index'
+export * from './vehicle/index'
+export * from './payment/index'
+export * from './webhook/index'
+export * from './main.routes'
