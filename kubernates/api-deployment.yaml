@@ -78,9 +78,9 @@ type: Opaque
 stringData:
   postgres-db: fiap-replacement-phase
   postgres-user: root
-  postgres-password: '1234'
+  postgres-password: "1234"
   postgres-host: fiap-replacement-phase-db
-  database-url: postgresql://root:1234@localhost:5432/fiap-replacement-phase?schema=public
+  database-url: postgresql://root:1234@fiap-replacement-phase-db:5432/fiap-replacement-phase?schema=public
 ---
 apiVersion: v1
 kind: Service
@@ -95,3 +95,4 @@ spec:
       targetPort: 3000
       nodePort: 30000
   type: LoadBalancer
+  externalTrafficPolicy: Local
