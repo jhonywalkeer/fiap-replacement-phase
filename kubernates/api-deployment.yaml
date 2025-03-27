@@ -18,12 +18,21 @@ spec:
           image: fiap-replacement-phase_fiap-replacement-phase-api:latest
           imagePullPolicy: Never
           resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "256Mi"
+              cpu: "200m"
           ports:
             - containerPort: 3000
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -31,10 +40,7 @@ spec:
                   name: api-secrets
                   key: database-url
             - name: POSTGRES_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: postgres-host
+              value: database-svc
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
@@ -78,9 +84,9 @@ type: Opaque
 stringData:
   postgres-db: fiap-replacement-phase
   postgres-user: root
-  postgres-password: "1234"
+  postgres-password: '1234'
   postgres-host: fiap-replacement-phase-db
-  database-url: postgresql://root:1234@fiap-replacement-phase-db:5432/fiap-replacement-phase?schema=public
+  database-url: postgresql://root:1234@database-svc:5432/fiap-replacement-phase?schema=public
 ---
 apiVersion: v1
 kind: Service
@@ -94,5 +100,5 @@ spec:
       port: 3000
       targetPort: 3000
       nodePort: 30000
-  type: LoadBalancer
+  type: NodePort
   externalTrafficPolicy: Local
