@@ -25,7 +25,7 @@ describe(`[DTO's] Delete Vehicle DTO`, () => {
   it('should throw an error if id is invalid expected type', () => {
     const input: number = 1
     const httpException: HttpException = IncorrectFieldOrParamTypeStub(
-      IncorrectType.Param,
+      IncorrectType.Field,
       Field.Id
     )
 
@@ -33,7 +33,7 @@ describe(`[DTO's] Delete Vehicle DTO`, () => {
     expect(httpException.statusCode).toBe(StatusCode.BadRequest)
     expect(httpException.name).toBe(ErrorName.InvalidParameters)
     expect(httpException.message).toBe(
-      new IncorrectFieldOrParamTypeError(IncorrectType.Param, Field.Id).message
+      new IncorrectFieldOrParamTypeError(IncorrectType.Field, Field.Id).message
     )
   })
 
