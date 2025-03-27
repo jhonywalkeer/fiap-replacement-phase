@@ -1,3 +1,4 @@
+export * from './bad-request.stub'
 export * from './conflict.stub'
 export * from './incorrect-field-or-param-type.stub'
 export * from './many-requests.stub'

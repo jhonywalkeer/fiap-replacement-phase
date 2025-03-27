@@ -1,14 +1,16 @@
 import { PaginationAndFilter } from '@common/interfaces'
 import { PaginationFilter } from '@common/utils/filters'
+import { VehicleStatus } from '@domain/enums'
 
 export const FindAllVehiclesQuery = (queryParameters: PaginationAndFilter) => {
   const sorting: string = queryParameters.sort || 'price'
-  const filter: string = queryParameters.filter || 'brand'
-  const value: string = queryParameters.value || ''
+  const filter: string = queryParameters.filter || 'status'
+  const value: string = queryParameters.value || VehicleStatus.Available
+
   const whereClause = {
     where: {
       [filter]: {
-        contains: value
+        equals: value
       }
     }
   }

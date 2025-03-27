@@ -5,5 +5,6 @@ export enum ErrorMessage {
   UnderAge = 'Usuário é menor de idade!',
   MailDomain = 'Email não pertence a um domínio válido!',
   SocialNumber = 'CPF inválido!',
-  VehicleValue = 'Valor do veículo informado é divergente do preço original!'
+  VehicleValue = 'Valor do veículo informado é divergente do preço original!',
+  AmountValue = 'O valor do pagamento deve ser maior que zero'
 }

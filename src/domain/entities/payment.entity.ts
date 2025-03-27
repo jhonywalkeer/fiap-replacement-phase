@@ -1,5 +1,7 @@
 import { Payment } from '@domain/interfaces'
 import { PaymentMethod } from '@domain/enums'
+import { BadRequestError } from '@common/errors'
+import { ErrorMessage } from '@common/enums'
 
 export class PaymentEntity {
   readonly sale_id: string
@@ -19,7 +21,7 @@ export class PaymentEntity {
 
   private validate(): void {
     if (this.amount <= 0) {
-      throw new Error('Payment value must be greater than zero')
+      throw new BadRequestError(ErrorMessage.AmountValue)
     }
   }
 }

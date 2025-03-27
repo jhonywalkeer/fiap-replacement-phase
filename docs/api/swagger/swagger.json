@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "FIAP Hackathon Backend (ClipVideo)",
-    "description": "Este é swagger do a api elaborada para o Hackathon da FIAP na especificação OpenAPI 3.0. Através dessa documentação, você terá acesso a todos os endpoints que estão disponíveis para realizar a ações responsáveis pelas features disponíveis para os usuários do _Clip Video_\n\nAlguns links úteis que podem ajudar:\n- [Repositório da API](https://github.com/jhonywalkeer/fiap-hackathon-backend)\n- [Arquivo que documenta a API no código-fonte](https://github.com/jhonywalkeer/fiap-hackathon-backend/blob/main/docs/api/swagger/swagger.json)\n- [Repositório do frontend](https://github.com/jhonywalkeer/fiap-hackathon-frontend)",
+    "title": "FIAP Replacement Phase",
+    "description": "Este é swagger do a api elaborada para a atividade substitutiva de fase da FIAP na especificação feita na versão OpenAPI 3.0. Através dessa documentação, você terá acesso a todos os endpoints que estão disponíveis para realizar a ações responsáveis pelas features disponíveis para o gerenciamento de revenda de veículos automotores: Alguns links úteis que podem ajudar:\n- [Repositório da API](https://github.com/jhonywalkeer/fiap-replacement-phase/tree/main)\n- [Arquivo que documenta a API no código-fonte](https://github.com/jhonywalkeer/fiap-hackathon-backend/blob/main/docs/api/swagger/swagger.json)\n",
     "termsOfService": "http://swagger.io/terms/",
     "contact": {
       "name": "Entre em contato com o desenvolvedor",
@@ -16,31 +16,56 @@
   },
   "externalDocs": {
     "description": "Veja mais sobre o projeto",
-    "url": "https://github.com/jhonywalkeer/fiap-hackathon-backend/blob/main/README.md"
+    "url": "https://github.com/jhonywalkeer/fiap-replacement-phase/blob/main/README.md"
   },
   "servers": [
     {
       "url": "http://localhost:3000/api/v1"
     },
     {
-      "url": "https://dfiap-hackathon.com.br"
+      "url": "https://dfiap-replacement-phase.com.br"
     },
     {
-      "url": "https://hfiap-hackathon.com.br"
+      "url": "https://hfiap-replacement-phase.com.br"
     },
     {
-      "url": "https://fiap-hackathon.com.br"
+      "url": "https://fiap-replacement-phase.com.br"
     }
   ],
-  "tags": [],
+  "tags": [
+    {
+      "name": "Heath Check",
+      "description": "Verificação de saúde dos serviços e APIs"
+    },
+    {
+      "name": "Vehicles",
+      "description": "Gerenciamento de veículos"
+    },
+    {
+      "name": "Clients",
+      "description": "Gerenciamento de clientes"
+    },
+    {
+      "name": "Sales",
+      "description": "Gerenciamento de vendas"
+    },
+    {
+      "name": "Payments",
+      "description": "Gerenciamento de pagamentos"
+    },
+    {
+      "name": "Webhooks",
+      "description": "Gerenciamento da comunicação entre o negócio"
+    }
+  ],
   "paths": {
     "/health": {
       "get": {
-        "summary": "Verifica se a API está online",
-        "description": "Verifica se a API está online",
+        "tags": ["Heath Check"],
+        "summary": "Health Check",
         "responses": {
           "200": {
-            "description": "API está online",
+            "description": "API está online e disponível para uso",
             "content": {
               "application/json": {
                 "schema": {
@@ -50,27 +75,28 @@
             }
           },
           "503": {
-            "description": "API está offline"
+            "description": "API está indisponível no momento"
           }
-        },
-        "tags": ["Health"]
+        }
       }
     },
-    "/auth": {
+    "/vehicles": {
       "post": {
-        "summary": "Obtem token de autenticação para um usuário",
-        "description": "Obtem token de autenticação para um usuário",
+        "tags": ["Vehicles"],
+        "summary": "Criar veículos",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "description": "Email do usuário",
-                    "example": "usuario@exemplo.com.br"
-                  }
+                "example": {
+                  "brand": "Fiat",
+                  "model": "Palio",
+                  "fuel": "Flex",
+                  "year": 2020,
+                  "color": "Black",
+                  "price": 25600,
+                  "status": "available"
                 }
               }
             }
@@ -78,59 +104,1177 @@
         },
         "responses": {
           "200": {
-            "description": "Usuário autenticado",
+            "description": "Veículo criado com sucesso",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string",
-                      "description": "Token de autenticação",
-                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InVzdWFyaW9AZXhhbXBsZS5jb20uYnIiLCJpYXQiOjE2MjYwNzIwNzMsImV4cCI6MTYyNjA3MjA3NH0.1"
-                    }
-                  }
+                  "$ref": "#/components/schemas/VehicleCreatedAndUpdatedSucess"
                 }
               }
             }
           },
-          "401": {
-            "description": "Token inválido ou não informado"
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Informação em conflito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
           }
-        },
-        "tags": ["Autenticação"]
+        }
+      },
+      "get": {
+        "tags": ["Vehicles"],
+        "summary": "Buscar todos veículos",
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Página de resultados que deve ser exibida (default é 1)",
+            "example": "1"
+          },
+          {
+            "name": "limit ",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Quantidade de itens que deve ser exibida por página (default é 10)",
+            "example": "10"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Campo a ser utilizado para ordenar o retorno dos dados (default é o preço dos veículos)",
+            "example": "price"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Ordem a ser utilizada para o retorno dos dados (ASC ou DESC)",
+            "example": "asc"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Campo a ser filtrado (default é o status do veículos)",
+            "example": "status"
+          },
+          {
+            "name": "value",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Valor a ser filtrado (default é o status de  veículo disponível)",
+            "example": "Available"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículos retornados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
       }
     },
-    "/users": {
-      "post": {
-        "summary": "Cria um novo usuário",
-        "description": "Cria um novo usuário",
+    "/vehicles/{id}": {
+      "get": {
+        "tags": ["Vehicles"],
+        "summary": "Buscar veículos com base no ID",
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Identificador do veículo",
+            "example": "0195d487-b7ba-7ca1-9464-29c185e0a7c8"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículo encontrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleById"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Vehicles"],
+        "summary": "Deletar veículos com base no ID",
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Identificador do veículo",
+            "example": "0195590a-3dc7-7f50-a73c-168f5a218d1a"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Veículo deletado com sucesso",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Vehicles"],
+        "summary": "Atualizar veículos",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Nome do usuário",
-                    "example": "Usuário Exemplo"
-                  },
-                  "email": {
-                    "type": "string",
-                    "description": "Email do usuário",
-                    "example": "usuario@exemplo.com.br"
-                  },
-                  "birth_date": {
-                    "type": "string",
-                    "description": "Data de nascimento do usuário",
-                    "example": "1999-12-31"
-                  },
-                  "active": {
-                    "type": "boolean",
-                    "description": "Usuário está ativo?",
-                    "example": true
-                  }
+                "example": {
+                  "brand": "VW",
+                  "model": "Tiguan",
+                  "fuel": "Flex",
+                  "year": 2020,
+                  "color": "Black",
+                  "price": 26500.59,
+                  "status": "Available"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Identificador do veículo",
+            "example": "01955e42-cc3e-78f3-97d6-5dfff92c508f"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículo atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleCreatedAndUpdatedSucess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Vehicles"],
+        "summary": "Atualizar veículos parcialmente",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "year": 2021,
+                  "price": 37500.2
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Identificador do veículo",
+            "example": "01955e42-cc3e-78f3-97d6-5dfff92c508f"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículo atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleCreatedAndUpdatedSucess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients": {
+      "post": {
+        "tags": ["Clients"],
+        "summary": "Criar cliente",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "name": "Jhony",
+                  "mail": "jhony@fiap.com.br",
+                  "birth_date": "1996-01-01T01:00:00.000Z",
+                  "social_security_number": "429.752.850-94"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleCreatedAndUpdatedSucess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Informação em conflito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Clients"],
+        "summary": "Buscar todas clientes",
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Página de resultados que deve ser exibida (default é 1)",
+            "example": "1"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Quantidade de itens que deve ser exibida por página (default é 10)",
+            "example": "10"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Campo a ser utilizado para ordenar o retorno dos dados (default é a data de criação)",
+            "example": "created_at"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Ordem a ser utilizada para o retorno dos dados (asc para ordenação ascedente ou desc para ordenação descendente)",
+            "example": "asc"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clientes retornados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/{social_number}": {
+      "get": {
+        "tags": ["Clients"],
+        "summary": "Buscar cliente com base no CPF",
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "social_number",
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "CPF do cliente que foi previamente cadastrado",
+            "example": "42975285094"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente retornado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientById"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/{id}": {
+      "put": {
+        "tags": ["Clients"],
+        "summary": "Atualizar cliente com base no CPF",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "name": "Jhony",
+                  "mail": "jhony@fiap.com.br",
+                  "birth_date": "1996-01-01T01:00:00.000Z",
+                  "social_security_number": "429.752.850-94"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Identificador do veículo (não é o CPF)",
+            "example": "019576dd-994c-7d7f-9d65-f9c5937f04ba"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientCreatedAndUpdatedSucess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Clients"],
+        "summary": "Atualizar cliente com base no CPF",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "name": "Jhony",
+                  "mail": "jhony@fiap.com.br",
+                  "birth_date": "1996-01-01T01:00:00.000Z",
+                  "social_security_number": "429.752.850-94"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Identificador do veículo (não é o CPF)",
+            "example": "019576dd-994c-7d7f-9d65-f9c5937f04ba"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientCreatedAndUpdatedSucess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sales": {
+      "post": {
+        "tags": ["Sales"],
+        "summary": "Criar Venda",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "vehicle_id": "01955906-b12c-7191-8aa3-ccde3a28f1c3",
+                  "buyer_id": "019572ab-1b8e-7741-abe0-9787d405193e",
+                  "sale_date": "2025-03-07T22:14:00.131Z"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Compra criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleCreatedAndUpdatedSucess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Informação em conflito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Sales"],
+        "summary": "Buscar todas vendas",
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Página de resultados que deve ser exibida (default é 1)",
+            "example": "1"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Quantidade de itens que deve ser exibida por página (default é 10)",
+            "example": "10"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Campo a ser utilizado para ordenar o retorno dos dados (default é a data da venda do veículo)",
+            "example": "sale_date"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Ordem a ser utilizada para o retorno dos dados (asc para ordenação ascedente ou desc para ordenação descendente)",
+            "example": "asc"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vendas retornadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sales/{id}": {
+      "get": {
+        "tags": ["Sales"],
+        "summary": "Buscar venda com base no ID",
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Identificador da venda",
+            "example": "01959be8-55d5-7cee-8be8-bb4822a06b5c"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Venda encontrada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleById"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Algo inesperado aconteceu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments": {
+      "post": {
+        "tags": ["Payments"],
+        "summary": "Criar pagamento",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "sale_id": "0195bae0-1ce7-7b92-8afa-2f850c70636c",
+                  "amount": 15000.29,
+                  "payment_method": "Pix"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pagamento criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Informação em conflito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Webhooks"],
+        "summary": "Confirmação de pagamento de uma venda",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "payment_id": "0195bae0-1ce7-7b92-8afa-2f850c70636c",
+                  "status": "canceled",
+                  "reason": "Cartão informado não atende os requisitos"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/{id}": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "Buscar pagamento com base no ID",
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Identificador do pagamento",
+            "example": "0195baf0-09d4-7050-a81d-c519d055990e"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pagamento encontrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentById"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
                 }
               }
             }
@@ -140,12 +1284,6 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    },
     "schemas": {
       "Health": {
         "type": "object",
@@ -177,11 +1315,415 @@
           }
         }
       },
-      "HealthOk": {
+      "HealthSucess": {
         "type": "object",
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Health"
+          }
+        }
+      },
+      "Vehicle": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador do veículo",
+            "example": "0195d487-b7ba-7ca1-9464-29c185e0a7c8"
+          },
+          "brand": {
+            "type": "string",
+            "description": "Marca do veículo",
+            "example": "Fiat"
+          },
+          "model": {
+            "type": "string",
+            "description": "Modelo do veículo",
+            "example": "Palio"
+          },
+          "fuel": {
+            "type": "string",
+            "description": "Tipo de combustível do veículo",
+            "example": "Flex"
+          },
+          "year": {
+            "type": "integer",
+            "description": "Ano de fabricação do veículo",
+            "example": 2020
+          },
+          "color": {
+            "type": "string",
+            "description": "Cor do veículo",
+            "example": "Black"
+          },
+          "price": {
+            "type": "number",
+            "description": "Preço do veículo",
+            "example": 25600
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Data de criação do veículo",
+            "example": "2021-03-07T22:14:00.131Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Data de atualização do veículo",
+            "example": "2021-03-07T22:14:00.131Z"
+          },
+          "sale_id": {
+            "type": "string",
+            "description": "Identificador da venda",
+            "example": "0195bae0-1ce7-7b92-8afa-2f850c70636c"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status do veículo",
+            "example": "Available"
+          }
+        }
+      },
+      "VehicleCreatedAndUpdatedSucess": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Vehicle"
+          }
+        }
+      },
+      "VehicleById": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Vehicle"
+          }
+        }
+      },
+      "VehicleList": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "Página atual",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "Quantidade de itens por página",
+            "example": 10
+          },
+          "total": {
+            "type": "number",
+            "description": "Total de itens",
+            "example": 100
+          },
+          "total_pages": {
+            "type": "number",
+            "description": "Total de páginas",
+            "example": 10
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Vehicle"
+            }
+          }
+        }
+      },
+      "Client": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador do veículo",
+            "example": "0195d487-b7ba-7ca1-9464-29c185e0a7c8"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do cliente",
+            "example": "Jhony"
+          },
+          "mail": {
+            "type": "string",
+            "description": "Nome do cliente",
+            "example": "jhony@fiap.com.br"
+          },
+          "birth_date": {
+            "type": "string",
+            "description": "Data de nascimento do cliente",
+            "example": "1996-01-01T01:00:00.000Z"
+          },
+          "social_security_number": {
+            "type": "string",
+            "description": "CPF do cliente",
+            "example": "429.752.850-94"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Data de criação do cliente",
+            "example": "2021-03-07T22:14:00.131Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Data de atualização do cliente",
+            "example": "2021-03-07T22:14:00.131Z"
+          }
+        }
+      },
+      "ClientCreatedAndUpdatedSucess": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Client"
+          }
+        }
+      },
+      "ClientById": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Client"
+          }
+        }
+      },
+      "ClientList": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "Página atual",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "Quantidade de itens por página",
+            "example": 10
+          },
+          "total": {
+            "type": "number",
+            "description": "Total de itens",
+            "example": 100
+          },
+          "total_pages": {
+            "type": "number",
+            "description": "Total de páginas",
+            "example": 10
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Client"
+            }
+          }
+        }
+      },
+      "Sale": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador da venda",
+            "example": "0195bae0-1ce7-7b92-8afa-2f850c70636c"
+          },
+          "vehicle_id": {
+            "type": "string",
+            "description": "Identificador do veículo",
+            "example": "01955906-b12c-7191-8aa3-ccde3a28f1c3"
+          },
+          "buyer_id": {
+            "type": "string",
+            "description": "Identificador do comprador",
+            "example": "019572ab-1b8e-7741-abe0-9787d405193e"
+          },
+          "sale_date": {
+            "type": "string",
+            "description": "Data da venda",
+            "example": "2025-03-07T22:14:00.131Z"
+          },
+          "payment_id": {
+            "type": "string",
+            "description": "Identificador do pagamento",
+            "example": "0195bae0-1ce7-7b92-8afa-2f850c70636c"
+          }
+        }
+      },
+      "SaleCreatedAndUpdatedSucess": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Sale"
+          }
+        }
+      },
+      "SaleById": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Sale"
+          }
+        }
+      },
+      "SaleList": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "Página atual",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "Quantidade de itens por página",
+            "example": 10
+          },
+          "total": {
+            "type": "number",
+            "description": "Total de itens",
+            "example": 100
+          },
+          "total_pages": {
+            "type": "number",
+            "description": "Total de páginas",
+            "example": 10
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sale"
+            }
+          }
+        }
+      },
+      "Payment":{
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador do pagamento",
+            "example": "0195bae0-1ce7-7b92-8afa-2f850c70636c"
+          },
+          "sale_id": {
+            "type": "string",
+            "description": "Identificador da venda",
+            "example": "0195bae0-1ce7-7b92-8afa-2f850c70636c"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status do pagamento",
+            "example": "canceled"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Data de criação do pagamento",
+            "example": "2021-03-07T22:14:00.131Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Data de atualização do pagamento",
+            "example": "2021-03-07T22:14:00.131Z"
+          },
+          "method": {
+            "type": "string",
+            "description": "Método de pagamento",
+            "example": "Pix"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Valor do pagamento",
+            "example": 15000.29
+          },
+          "reason": {
+            "type": "string",
+            "description": "Motivo do cancelamento",
+            "example": "Cartão informado não atende os requisitos"
+          }
+        }
+      },
+      "PaymentById": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Payment"
+          }
+        }
+      },
+      "NotFoundError": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "description": "Código de status da resposta",
+            "example": 404
+          },
+          "error": {
+            "type": "string",
+            "description": "Tipo de erro",
+            "example": "Não encontrado"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro",
+            "example": "Recurso não encontrado"
+          }
+        }
+      },
+      "NotProvidedError": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "description": "Código de status da resposta",
+            "example": 400
+          },
+          "error": {
+            "type": "string",
+            "description": "Tipo de erro",
+            "example": "Requisição inválida"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro",
+            "example": "Propriedade não fornecido(a) ou incorreta no campo (ou parâmetro)!"
+          }
+        }
+      },
+      "ConflictError": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "description": "Código de status da resposta",
+            "example": 409
+          },
+          "error": {
+            "type": "string",
+            "description": "Tipo de erro",
+            "example": "Informação em conflito"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro",
+            "example": "Recurso já existe"
+          }
+        }
+      },
+      "InternalServerError": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "description": "Código de status da resposta",
+            "example": 500
+          },
+          "error": {
+            "type": "string",
+            "description": "Tipo de erro",
+            "example": "Algo inesperado aconteceu"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro",
+            "example": "Ao tentar realizar processamento, não foi possível realizar a operação!"
           }
         }
       }

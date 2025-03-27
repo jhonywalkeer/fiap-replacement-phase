@@ -1,7 +1,9 @@
 import { IdentifierMock } from '@mocks/common'
-import { InputPaymentMock } from './create-payment.mock'
 
-export const UpdatePaymentMock = {
-  id: IdentifierMock,
-  ...InputPaymentMock
+export const InputUpdatePaymentMock = {
+  payment_id: IdentifierMock,
+  status: 'approved',
+  reason: 'Teste de atualização'
 }
+
+export const UpdatePaymentMock = InputUpdatePaymentMock

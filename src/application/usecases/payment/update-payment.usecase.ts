@@ -37,7 +37,7 @@ export class UpdatePaymentUC implements UpdatePaymentUseCase {
 
   private async validatedPayment(id: string): Promise<PaymentWithSaleEntity> {
     const findPayment = await this.findPaymentById.findById({ id })
-    return findPayment ? findPayment : this.notFoundHandler(Field.Payment)
+    return findPayment ?? this.notFoundHandler(Field.Payment)
   }
 
   private async validatedSale(id: string): Promise<SaleEntity> {

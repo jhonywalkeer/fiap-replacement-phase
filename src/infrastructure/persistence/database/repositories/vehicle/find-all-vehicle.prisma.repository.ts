@@ -22,10 +22,9 @@ export class FindAllVehiclePrismaRepository
       const findVehicles = await this.prisma.vehicle.findMany(condition)
       const countVehicles = await this.prisma.vehicle.count(count)
 
-      //@ts-ignore
       return !findVehicles || findVehicles.length === 0
         ? null
-        : [findVehicles, countVehicles]
+        : ([findVehicles, countVehicles] as unknown as [VehicleEntity, number])
     } catch (error) {
       Logger.error(
         `${this.method} Status Code ${StatusCode.InternalServer} | ${error}`

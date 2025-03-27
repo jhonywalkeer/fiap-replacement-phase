@@ -19,6 +19,7 @@ export enum Field {
   PaymentIdentification = 'identificador do pagamento',
   PaymentMethod = 'método de pagamento',
   PaymentStatus = 'status do pagamento',
+  PaymentReason = 'motivo do pagamento',
   Mail = 'email do cliente',
   BirthDate = 'data de nascimento do cliente',
   Card = 'cartão',

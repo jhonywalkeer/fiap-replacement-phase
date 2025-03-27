@@ -87,7 +87,7 @@ export class CreatePaymentUC implements CreatePaymentUseCase {
 
   private async validatedSale(sale_id: string): Promise<SaleEntity> {
     const findSale = await this.findSaleById.findById({ id: sale_id })
-    return !findSale ? this.notFoundHandler(Field.Client) : findSale
+    return !findSale ? this.notFoundHandler(Field.Sale) : findSale
   }
 
   private async validatedClient(client_id: string): Promise<ClientEntity> {
