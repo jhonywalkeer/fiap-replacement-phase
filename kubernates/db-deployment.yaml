@@ -1,40 +1,121 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: db-deployment
-  labels:
-    app: db
+  name: postgres-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: db
+      app: postgres
   template:
     metadata:
       labels:
-        app: db
+        app: postgres
     spec:
       containers:
-        - name: db
+        - name: postgres
           image: postgres:latest
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2048Mi"
+              cpu: "2.0"
           ports:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: mydatabase
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: postgres-db
             - name: POSTGRES_USER
-              value: myuser
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: postgres-user
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: pg-user
             - name: POSTGRES_PASSWORD
-              value: mypassword
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: postgres-password
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -q
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+  labels:
+    name: postgres-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage-db
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /var/lib/postgres
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  labels:
+    name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-storage-db
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: database-secrets
+type: Opaque
+stringData:
+  postgres-db: "fiap-replacement-phase"
+  postgres-user: "root"
+  postgres-password: "1234"
+  pg-user: "root"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: db-service
+  name: database-svc
 spec:
   selector:
-    app: db
+    app: postgres
   ports:
     - protocol: TCP
       port: 5432
       targetPort: 5432
+  type: NodePort
