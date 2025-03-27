@@ -2,14 +2,22 @@ import {
   FindPaymentByIdRepository,
   UpdatePaymentRepository
 } from '@application/repositories/payment'
-import { FindSaleByIdRepository } from '@application/repositories/sale'
+import {
+  FindSaleByIdRepository,
+  UpdateSaleWithPaymentRepository
+} from '@application/repositories/sale'
+import { UpdateVehicleStatusRepository } from '@application/repositories/vehicle'
 import { UpdatePaymentUC } from '@application/usecases/payment'
 import { DatabaseConnection } from '@infrastructure/persistence/database'
 import {
   FindPaymentByIdPrismaRepository,
   UpdatePaymentPrismaRepository
 } from '@infrastructure/persistence/database/repositories/payment'
-import { FindSaleByIdPrismaRepository } from '@infrastructure/persistence/database/repositories/sale'
+import {
+  FindSaleByIdPrismaRepository,
+  UpdateSaleWithPaymentPrismaRepository
+} from '@infrastructure/persistence/database/repositories/sale'
+import { UpdateVehicleStatusPrismaRepository } from '@infrastructure/persistence/database/repositories/vehicle'
 import { HttpGenericResponseAdapter } from '@main/adapters/http'
 import { UpdatePaymentWebhookController } from '@presentation/controllers/payment'
 
@@ -21,10 +29,16 @@ export const UpdatePaymentWebhookControllerFactory = () => {
     new FindSaleByIdPrismaRepository(databaseConnection)
   const updatePaymentRepository: UpdatePaymentRepository =
     new UpdatePaymentPrismaRepository(databaseConnection)
+  const updateVehicleStatusRepository: UpdateVehicleStatusRepository =
+    new UpdateVehicleStatusPrismaRepository(databaseConnection)
+  const updateSaleWithPaymentRepository: UpdateSaleWithPaymentRepository =
+    new UpdateSaleWithPaymentPrismaRepository(databaseConnection)
   const updatePaymentUseCase: UpdatePaymentUC = new UpdatePaymentUC(
     findPaymentByIdRepository,
     findSaleByIdRepository,
-    updatePaymentRepository
+    updatePaymentRepository,
+    updateVehicleStatusRepository,
+    updateSaleWithPaymentRepository
   )
   const genericSucessPresenter: HttpGenericResponseAdapter<any> =
     new HttpGenericResponseAdapter<any>()
