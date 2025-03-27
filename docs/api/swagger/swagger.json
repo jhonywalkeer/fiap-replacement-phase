@@ -1175,56 +1175,6 @@
             }
           }
         }
-      },
-      "put": {
-        "tags": ["Webhooks"],
-        "summary": "Confirmação de pagamento de uma venda",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "example": {
-                  "payment_id": "0195bae0-1ce7-7b92-8afa-2f850c70636c",
-                  "status": "canceled",
-                  "reason": "Cartão informado não atende os requisitos"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Payment"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Requisição inválida",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotProvidedError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Não encontrado",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundError"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/payments/{id}": {
@@ -1255,6 +1205,58 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PaymentById"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotProvidedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks/payments": {
+      "put": {
+        "tags": ["Webhooks"],
+        "summary": "Confirmação de pagamento de uma venda",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "payment_id": "0195bae0-1ce7-7b92-8afa-2f850c70636c",
+                  "status": "canceled",
+                  "reason": "Cartão informado não atende os requisitos"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
                 }
               }
             }
@@ -1594,7 +1596,7 @@
           }
         }
       },
-      "Payment":{
+      "Payment": {
         "type": "object",
         "properties": {
           "id": {

@@ -7,6 +7,6 @@ const { updatePaymentWebhookController } =
   UpdatePaymentWebhookControllerFactory()
 
 WebhookRoute.put(
-  '/payment',
+  '/payments',
   ExpressRouteAdapter(updatePaymentWebhookController)
 )

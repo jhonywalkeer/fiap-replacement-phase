@@ -2,11 +2,15 @@ import {
   FindPaymentByIdRepository,
   UpdatePaymentRepository
 } from '@application/repositories/payment'
-import { FindSaleByIdRepository } from '@application/repositories/sale'
+import {
+  FindSaleByIdRepository,
+  UpdateSaleWithPaymentRepository
+} from '@application/repositories/sale'
+import { UpdateVehicleStatusRepository } from '@application/repositories/vehicle'
 import { StatusCode } from '@common/enums'
 import { NotFoundError } from '@common/errors'
 import { PaymentWithSaleEntity, SaleEntity } from '@domain/entities'
-import { Field } from '@domain/enums'
+import { Field, VehicleStatus } from '@domain/enums'
 import { UpdatePayment } from '@domain/interfaces/payment'
 import { UpdatePaymentUseCase } from '@domain/usecases/payment'
 import { Logger } from '@infrastructure/logging'
@@ -17,7 +21,9 @@ export class UpdatePaymentUC implements UpdatePaymentUseCase {
   constructor(
     private readonly findPaymentById: FindPaymentByIdRepository,
     private readonly findSaleById: FindSaleByIdRepository,
-    private readonly updatePayment: UpdatePaymentRepository
+    private readonly updatePayment: UpdatePaymentRepository,
+    private readonly updateVehicle: UpdateVehicleStatusRepository,
+    private readonly updateSale: UpdateSaleWithPaymentRepository
   ) {}
 
   async execute(payload: UpdatePayment): Promise<PaymentWithSaleEntity> {
@@ -32,6 +38,9 @@ export class UpdatePaymentUC implements UpdatePaymentUseCase {
       reason: payload.reason
     })
 
+    await this.updateVehicleStatus(findSale.vehicle_id)
+    await this.updateSaleStatus(findSale.id, updatedPayment.id)
+
     return await this.validatedPayment(updatedPayment.id)
   }
 
@@ -43,6 +52,27 @@ export class UpdatePaymentUC implements UpdatePaymentUseCase {
   private async validatedSale(id: string): Promise<SaleEntity> {
     const findSale = await this.findSaleById.findById({ id })
     return findSale ? findSale : this.notFoundHandler(Field.Sale)
+  }
+
+  private async updateVehicleStatus(vehicleId: string): Promise<void> {
+    const updateVehicle = await this.updateVehicle.updateVehicleWithStatus({
+      id: vehicleId,
+      status: VehicleStatus.Sold
+    })
+    Logger.info(
+      `${this.method} | Veículo ${updateVehicle?.id} vendido com sucesso`
+    )
+  }
+
+  private async updateSaleStatus(
+    saleId: string,
+    paymentId: string
+  ): Promise<void> {
+    const updateSale = await this.updateSale.updateSaleWithPaymentId({
+      id: saleId,
+      payment_id: paymentId
+    })
+    Logger.info(`${this.method} | Status da venda ${updateSale?.id} atualizada`)
   }
 
   private async notFoundHandler(field: string): Promise<any> {

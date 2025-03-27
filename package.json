@@ -6,7 +6,7 @@
     "prepare:build": "ts-patch install -s",
     "build": "npm run prepare:build && tsc",
     "start:prod": "npx prisma migrate deploy --schema=src/infrastructure/persistence/database/schema.prisma && node -r tsconfig-paths/register dist/src/bootstrap/server.js",
-    "start:dev": "ts-node -r tsconfig-paths/register src/bootstrap/server.ts",
+    "start:dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/bootstrap/server.ts",
     "prisma:generate-migrations": "npx prisma migrate dev",
     "prisma:apply-migrations": "npx prisma migrate deploy",
     "prisma:generate-erd": "npx prisma generate",
@@ -97,10 +97,7 @@
     "winston": "^3.17.0"
   },
   "lint-staged": {
-    "*.{js,ts}": [
-      "eslint --fix",
-      "prettier --write"
-    ]
+    "*.{js,ts}": ["eslint --fix", "prettier --write"]
   },
   "commitizen": {
     "path": "./node_modules/cz-conventional-changelog"

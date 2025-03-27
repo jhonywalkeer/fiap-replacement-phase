@@ -27,18 +27,19 @@ export class CreateSaleUC implements CreateSaleUseCase {
   async execute(payload: CreateSale): Promise<SaleEntity> {
     Logger.info(`${this.method}.execute`)
 
-    await this.validatedVehicle(payload.vehicle_id)
-    await this.validatedSale(payload)
+    const vehicle = await this.validatedVehicle(payload.vehicle_id)
+    const sale = await this.validatedSale(payload)
+    const createSale = !sale ? await this.createSale.create(payload) : sale
 
-    const sale = await this.createSale.create(payload)
+    console.log('createSale', createSale)
 
     await this.updateVehicle.update({
-      id: payload.vehicle_id,
-      sale_id: sale.id,
+      id: vehicle.id,
+      sale_id: createSale.id,
       status: VehicleStatus.Reserved
     })
 
-    return await this.createSale.create(payload)
+    return createSale
   }
 
   private async validatedVehicle(id: string): Promise<VehicleEntity> {

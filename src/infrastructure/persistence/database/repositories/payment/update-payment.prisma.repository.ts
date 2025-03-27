@@ -14,7 +14,7 @@ export class UpdatePaymentPrismaRepository implements UpdatePaymentRepository {
   async update(payload: UpdatePayment): Promise<PaymentEntity> {
     try {
       const updateVehicle = await this.prisma.payment.update({
-        where: { id: payload.payment_id },
+        where: { id: payload.id },
         data: {
           status: payload.status,
           reason: payload.reason
